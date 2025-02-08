@@ -38,7 +38,7 @@ export default buildConfig({
     },
     components: {
       beforeLogin: ['@/components/BeforeLogin'],
-      beforeDashboard: ['@/components/BeforeDashboard'],
+       
     },
     disableSuspense: true, // ✅ Prevents React hydration mismatch issues
   },
