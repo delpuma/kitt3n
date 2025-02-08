@@ -37,7 +37,7 @@ export const Clients: CollectionConfig = {
     {
       name: 'schedulingPreferences',
       label: 'Preferred Posting Hours',
-      type: 'group',
+      type: 'number',
       fields: [
         {
           name: 'startHour',
@@ -61,45 +61,12 @@ export const Clients: CollectionConfig = {
     },
     {
       name: 'socialMediaPosts',
-      label: 'AI Suggested Social Media Posts',
-      type: 'array',
-      fields: [
-        {
-          name: 'postText',
-          label: 'Post Text',
-          type: 'textarea',
-          required: true,
-        },
-        {
-          name: 'media',
-          label: 'Attached Media',
-          type: 'upload',
-          relationTo: 'media',
-        },
-        {
-          name: 'scheduledDate',
-          label: 'Suggested Posting Date',
-          type: 'date',
-          required: true,
-        },
-        {
-          name: 'clientComment',
-          label: 'Client Comments / Edit Requests',
-          type: 'textarea',
-        },
-        {
-          name: 'approved',
-          label: 'Approval Status',
-          type: 'select',
-          options: [
-            { label: 'Pending Approval', value: 'pending' },
-            { label: 'Approved', value: 'approved' },
-            { label: 'Rejected', value: 'rejected' },
-          ],
-          defaultValue: 'pending',
-        },
-      ],
+      label: 'Social Media Posts',
+      type: 'relationship',
+      relationTo: 'clients_social_media_posts',
+      hasMany: true,
     },
+    
     {
       name: 'blogPosts',
       label: 'AI Suggested Blog Posts',

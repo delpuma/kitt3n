@@ -23,6 +23,7 @@ import { AIAssistants } from './collections/AIAssistants';
 import { CaseStudies } from './collections/CaseStudies';
 import { Testimonials } from './collections/Testimonials';
 import { Settings } from './collections/Settings';
+import { ClientsSocialMediaPosts } from './collections/clients_social_media_posts';
 
 
 // Resolve directory name for compatibility
@@ -64,7 +65,7 @@ export default buildConfig({
       })(),
     },
   }),
-  collections: [Pages, Posts, Media, Services, Clients, Projects, AIAssistants, CaseStudies, Testimonials, Categories, Users, Settings],
+  collections: [Pages, Posts, Media, Services, Clients, Projects, AIAssistants, CaseStudies,ClientsSocialMediaPosts, Testimonials, Categories, Users, Settings],
   cors: [process.env.SERVER_URL || 'http://localhost:3000'], // ✅ Safer fallback for local & production
   globals: [Header, Footer],
   plugins: [
