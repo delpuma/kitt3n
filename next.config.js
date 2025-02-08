@@ -1,28 +1,30 @@
 import { withPayload } from '@payloadcms/next/withPayload'
 
-import redirects from './redirects.js'
-
 const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
   ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : undefined || process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+  : process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = { fs: false, assert: false };
+    }
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'node:assert': require.resolve('assert/'),
+    };
+    return config;
+  },
   images: {
     remotePatterns: [
-      ...[NEXT_PUBLIC_SERVER_URL /* 'https://example.com' */].map((item) => {
-        const url = new URL(item)
-
-        return {
-          hostname: url.hostname,
-          protocol: url.protocol.replace(':', ''),
-        }
-      }),
+      {
+        hostname: new URL(NEXT_PUBLIC_SERVER_URL).hostname,
+        protocol: new URL(NEXT_PUBLIC_SERVER_URL).protocol.replace(':', ''),
+      },
     ],
   },
   reactStrictMode: false,
-  redirects,
 }
 
 export default withPayload(nextConfig)

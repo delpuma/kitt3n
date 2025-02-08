@@ -2,54 +2,28 @@ import { CollectionAfterChangeHook } from 'payload/types';
 import { generateAIContent } from '../../utilities/openai';
 
 export const handleRewrites: CollectionAfterChangeHook = async ({ doc, previousDoc, operation, req }) => {
-  if (operation === 'update') {
-    const updatedSocialMediaPosts = [...doc.socialMediaPosts];
-    const updatedBlogPosts = [...doc.blogPosts];
+  try {
+    if (operation !== 'update') return;
 
-    let needsUpdate = false;
-
-    // Process Rejected Social Media Posts
-    for (let i = 0; i < updatedSocialMediaPosts.length; i++) {
-      const post = updatedSocialMediaPosts[i];
-      const prevPost = previousDoc?.socialMediaPosts?.[i];
-
-      if (post.approved === 'rejected' && prevPost?.approved !== 'rejected') {
-        console.log(`🚀 AI Rewriting Rejected Social Media Post: ${post.postText}`);
-
-        const aiPrompt = `Rewrite this social media post to be more engaging, following a ${doc.aiTone || 'professional'} tone.
-        Consider the client's note: "${post.clientComment || 'No additional instructions.'}".
-        Original Post: "${post.postText}"`;
-
-        post.postText = await generateAIContent(aiPrompt);
-        post.approved = 'pending'; // Reset to pending approval
-        needsUpdate = true;
+    // Check if the client rejected a post
+    doc.socialMediaPosts?.forEach(async (post, index) => {
+      if (post.approved === 'rejected') {
+        console.log(`🔄 AI rewriting rejected social media post #${index + 1}`);
+        const newText = await generateAIContent(post.postText, doc.clientComment || '');
+        post.postText = newText;
+        post.approved = 'pending';
       }
-    }
+    });
 
-    // Process Rejected Blog Posts
-    for (let i = 0; i < updatedBlogPosts.length; i++) {
-      const post = updatedBlogPosts[i];
-      const prevPost = previousDoc?.blogPosts?.[i];
-
-      if (post.approved === 'rejected' && prevPost?.approved !== 'rejected') {
-        console.log(`🚀 AI Rewriting Rejected Blog Post: ${post.title}`);
-
-        const aiPrompt = `Rewrite this blog post to be more engaging, detailed, and valuable to the audience, following a ${doc.aiTone || 'professional'} tone.
-        Consider the client's note: "${post.clientComment || 'No additional instructions.'}".
-        Title: "${post.title}"
-        Content: "${post.content}"`;
-
-        post.content = await generateAIContent(aiPrompt);
-        post.approved = 'pending'; // Reset to pending approval
-        needsUpdate = true;
+    doc.blogPosts?.forEach(async (post, index) => {
+      if (post.approved === 'rejected') {
+        console.log(`🔄 AI rewriting rejected blog post #${index + 1}`);
+        const newText = await generateAIContent(post.content, doc.clientComment || '');
+        post.content = newText;
+        post.approved = 'pending';
       }
-    }
-
-    if (needsUpdate) {
-      console.log(`✅ AI-generated content updated and reset for client approval.`);
-      return { ...doc, socialMediaPosts: updatedSocialMediaPosts, blogPosts: updatedBlogPosts };
-    }
+    });
+  } catch (error) {
+    console.error(`❌ Error handling rewrites:`, error);
   }
-
-  return doc;
 };
