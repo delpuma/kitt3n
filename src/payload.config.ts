@@ -27,10 +27,20 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URI,
     },
   }),
-  
-  // 🚨 REMOVE EMAIL CONFIGURATION TEMPORARILY 🚨
-  email: false, // This will fully disable email handling
-  
+
+  email: process.env.NODE_ENV === 'production' ? {
+    fromName: 'Your App',
+    fromAddress: 'no-reply@yourapp.com',
+    transport: {
+      host: 'smtp.your-email-provider.com',
+      port: 587,
+      auth: {
+        user: 'your-username',
+        pass: 'your-password',
+      },
+    },
+  } : null,
+
   collections: [
     Pages,
     Posts,

@@ -1,5 +1,6 @@
 import { withPayload } from '@payloadcms/next/withPayload';
 import redirects from './redirects.js';
+import webpack from 'webpack';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -17,13 +18,20 @@ const nextConfig = {
   },
   serverExternalPackages: ['@payloadcms/db-postgres'], // ✅ Fix for Next.js API change
   webpack: (config) => {
+    // ✅ Ensure 'worker_threads' and 'fs' are ignored on client-side
     config.resolve.fallback = {
       ...config.resolve.fallback,
-      fs: false, // ✅ Fixes "Module not found: Can't resolve 'fs'"
-      path: false, // ✅ Fixes "Module not found: Can't resolve 'path'"
-      worker_threads: false, // ✅ Fixes "Module not found: Can't resolve 'worker_threads'"
-      assert: false, // ✅ Fixes "UnhandledSchemeError: node:assert"
+      fs: false,
+      path: false,
+      worker_threads: false, // 🚀 FIX for your error
     };
+
+    config.plugins.push(
+      new webpack.NormalModuleReplacementPlugin(/^node:/, (resource) => {
+        resource.request = resource.request.replace(/^node:/, '');
+      })
+    );
+
     return config;
   },
   redirects,
