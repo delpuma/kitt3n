@@ -17,13 +17,13 @@ export const Logo = (props: Props) => {
     /* eslint-disable @next/next/no-img-element */
     <img
       alt="DelPuma Logo"
-      width={353}
-      height={90}
+      width={255}
+      height={55}
       loading={loading}
       fetchPriority={priority}
       decoding="async"
-      className={clsx('max-w-[353px] w-full h-[90px]', className)}
-      src="/DelpumaLogo.svg"
+      className={clsx('max-w-[12.375rem] w-full h-[55px]', className)}
+      src="/Delpuma2025WhiteLogo.svg"
     />
   )
 }
